@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Giyu Akaza Flight</title>
+
+<style>
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    overflow: hidden;
+    background: #05000b;
+    font-family: Arial, sans-serif;
+    touch-action: manipulation;
+}
+
+#game {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at center, #241044, #05000b 70%);
+}
+
+/* Moon */
+
+#moon {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: #eee;
+    box-shadow: 0 0 50px #b68cff;
+    top: 8%;
+    right: 10%;
+    opacity: 0.8;
+}
+
+/* Giyu Character */
+
+#bird {
+    position: absolute;
+    width: 65px;
+    height: 65px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #75d9ff;
+    box-shadow: 0 0 15px #008cff;
+    left: 20%;
+    top: 40%;
+    z-index: 10;
+}
+
+/* Score */
+
+#score {
+    position: absolute;
+    top: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 45px;
+    font-weight: bold;
+    text-shadow: 0 0 15px #8c4cff;
+    z-index: 50;
+}
+
+/* Spiky Pillars */
+
+.pillar {
+    position: absolute;
+    width: 80px;
+
+    background:
+        repeating-linear-gradient(
+            135deg,
+            #16051f 0px,
+            #16051f 12px,
+            #39105a 13px,
+            #39105a 20px
+        );
+
+    border: 3px solid #b24cff;
+
+    box-shadow:
+        0 0 12px #8a2be2,
+        inset 0 0 15px #000;
+
+    z-index: 5;
+}
+
+/* Akaza Inspired Tattoo */
+
+.tattoo {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    opacity: 0.9;
+}
+
+.tattoo::before,
+.tattoo::after {
+    content: "";
+    position: absolute;
+
+    width: 150%;
+    height: 18px;
+
+    left: -25%;
+
+    background: #53c7ff;
+
+    box-shadow:
+        0 25px #53c7ff,
+        0 50px #53c7ff,
+        0 75px #53c7ff,
+        0 100px #53c7ff,
+        0 125px #53c7ff;
+
+    transform: rotate(-35deg);
+}
+
+.tattoo::before {
+    top: 30px;
+}
+
+.tattoo::after {
+    top: 5px;
+    transform: rotate(35deg);
+}
+
+/* Spikes */
+
+.spikes {
+    position: absolute;
+    left: -5px;
+    width: 90px;
+
+    display: flex;
+    justify-content: space-around;
+
+    z-index: 8;
+}
+
+.spikes span {
+    width: 0;
+    height: 0;
+
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+}
+
+.top .spikes {
+    bottom: -22px;
+}
+
+.bottom .spikes {
+    top: -22px;
+}
+
+.top .spikes span {
+    border-top: 22px solid #ff3b8d;
+}
+
+.bottom .spikes span {
+    border-bottom: 22px solid #ff3b8d;
+}
+
+/* Start Screen and Game Over */
+
+.screen {
+    position: absolute;
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.75);
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    color: white;
+
+    z-index: 100;
+
+    text-align: center;
+}
+
+#gameOver {
+    display: none;
+}
+
+h1 {
+    font-size: 38px;
+    color: #ff4fa3;
+
+    text-shadow:
+        0 0 20px #ff0080;
+
+    margin-bottom: 15px;
+}
+
+p {
+    margin-bottom: 20px;
+    font-size: 18px;
+}
+
+button {
+    padding: 14px 35px;
+
+    border: 2px solid #53c7ff;
+
+    border-radius: 10px;
+
+    background: #13051c;
+
+    color: white;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+    box-shadow:
+        0 0 15px #008cff;
+
+    cursor: pointer;
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+</style>
+</head>
+
+
+<body>
+
+<div id="game">
+
+    <!-- Moon -->
+
+    <div id="moon"></div>
+
+
+    <!-- Giyu Image -->
+
+    <img
+        id="bird"
+        src="giyuproject.jpg"
+        alt="Giyu"
+    >
+
+
+    <!-- Score -->
+
+    <div id="score">0</div>
+
+
+    <!-- Start Screen -->
+
+    <div
+        id="startScreen"
+        class="screen"
+    >
+
+        <h1>
+            GIYU: AKAZA FLIGHT
+        </h1>
+
+        <p>
+            Tap the screen or press SPACE to fly
+        </p>
+
+        <button onclick="startGame()">
+            START GAME
+        </button>
+
+    </div>
+
+
+    <!-- Game Over -->
+
+    <div
+        id="gameOver"
+        class="screen"
+    >
+
+        <h1>
+            GAME OVER
+        </h1>
+
+        <p id="finalScore">
+            Score: 0
+        </p>
+
+        <button onclick="restartGame()">
+            RESTART
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const game =
+    document.getElementById("game");
+
+const bird =
+    document.getElementById("bird");
+
+const scoreText =
+    document.getElementById("score");
+
+
+let birdY;
+
+let velocity;
+
+let gravity = 0.45;
+
+let jump = -7;
+
+
+let gameRunning = false;
+
+let score = 0;
+
+let pillars = [];
+
+let gameSpeed = 3;
+
+
+/* Fly */
+
+function fly() {
+
+    if (gameRunning) {
+
+        velocity = jump;
+
+    }
+
+}
+
+
+/* Keyboard Control */
+
+document.addEventListener(
+    "keydown",
+    function(e) {
+
+        if (e.code === "Space") {
+
+            e.preventDefault();
+
+            fly();
+
+        }
+
+    }
+);
+
+
+/* Mouse Control */
+
+document.addEventListener(
+    "mousedown",
+    function(e) {
+
+        if (
+            gameRunning &&
+            e.target.tagName !== "BUTTON"
+        ) {
+
+            fly();
+
+        }
+
+    }
+);
+
+
+/* Mobile Touch Control */
+
+document.addEventListener(
+    "touchstart",
+    function(e) {
+
+        if (
+            gameRunning &&
+            e.target.tagName !== "BUTTON"
+        ) {
+
+            fly();
+
+        }
+
+    },
+    {
+        passive: true
+    }
+);
+
+
+/* Start Game */
+
+function startGame() {
+
+    document
+        .getElementById("startScreen")
+        .style.display = "none";
+
+
+    document
+        .getElementById("gameOver")
+        .style.display = "none";
+
+
+    gameRunning = true;
+
+
+    birdY = 40;
+
+    velocity = 0;
+
+    score = 0;
+
+    gameSpeed = 3;
+
+
+    scoreText.innerText = "0";
+
+
+    /* Remove Old Pillars */
+
+    pillars.forEach(
+        p => {
+
+            p.top.remove();
+
+            p.bottom.remove();
+
+        }
+    );
+
+
+    pillars = [];
+
+
+    createPillar(0);
+
+
+    gameLoop();
+
+}
+
+
+/* Create Pillar */
+
+function createPillar(delay) {
+
+    setTimeout(
+        () => {
+
+            if (!gameRunning) {
+
+                return;
+
+            }
+
+
+            const screenHeight =
+                window.innerHeight;
+
+
+            const gap = 190;
+
+
+            const minHeight = 70;
+
+
+            const maxHeight =
+                screenHeight -
+                gap -
+                70;
+
+
+            const topHeight =
+                Math.random() *
+                (maxHeight - minHeight)
+                + minHeight;
+
+
+            const bottomHeight =
+                screenHeight -
+                topHeight -
+                gap;
+
+
+            /* Top Pillar */
+
+            const top =
+                document.createElement("div");
+
+
+            top.className =
+                "pillar top";
+
+
+            top.style.height =
+                topHeight + "px";
+
+
+            /* Bottom Pillar */
+
+            const bottom =
+                document.createElement("div");
+
+
+            bottom.className =
+                "pillar bottom";
+
+
+            bottom.style.height =
+                bottomHeight + "px";
+
+
+            /* Akaza Tattoo */
+
+            top.innerHTML = `
+                <div class="tattoo"></div>
+
+                <div class="spikes">
+
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+
+                </div>
+            `;
+
+
+            bottom.innerHTML = `
+                <div class="tattoo"></div>
+
+                <div class="spikes">
+
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+
+                </div>
+            `;
+
+
+            game.appendChild(top);
+
+            game.appendChild(bottom);
+
+
+            /* Store Pillar */
+
+            pillars.push({
+
+                top: top,
+
+                bottom: bottom,
+
+                x: window.innerWidth,
+
+                scored: false
+
+            });
+
+
+            /* Next Pillar */
+
+            createPillar(1700);
+
+
+        },
+        delay
+    );
+
+}
+
+
+/* Main Game Loop */
+
+function gameLoop() {
+
+    if (!gameRunning) {
+
+        return;
+
+    }
+
+
+    /* Gravity */
+
+    velocity += gravity;
+
+
+    birdY += velocity;
+
+
+    bird.style.top =
+        birdY + "%";
+
+
+    const birdRect =
+        bird.getBoundingClientRect();
+
+
+    /* Move Pillars */
+
+    for (
+        let i = pillars.length - 1;
+        i >= 0;
+        i--
+    ) {
+
+
+        let p =
+            pillars[i];
+
+
+        p.x -= gameSpeed;
+
+
+        p.top.style.left =
+            p.x + "px";
+
+
+        p.bottom.style.left =
+            p.x + "px";
+
+
+        const topRect =
+            p.top.getBoundingClientRect();
+
+
+        const bottomRect =
+            p.bottom.getBoundingClientRect();
+
+
+        /* Collision */
+
+        if (
+
+            collision(
+                birdRect,
+                topRect
+            )
+
+            ||
+
+            collision(
+                birdRect,
+                bottomRect
+            )
+
+        ) {
+
+            endGame();
+
+            return;
+
+        }
+
+
+        /* Score */
+
+        if (
+
+            !p.scored
+
+            &&
+
+            p.x + 80 <
+            birdRect.left
+
+        ) {
+
+            p.scored = true;
+
+
+            score++;
+
+
+            scoreText.innerText =
+                score;
+
+
+            /* Increase Difficulty */
+
+            if (
+                score % 5 === 0
+            ) {
+
+                gameSpeed += 0.3;
+
+            }
+
+        }
+
+
+        /* Remove Pillar */
+
+        if (
+            p.x < -120
+        ) {
+
+            p.top.remove();
+
+            p.bottom.remove();
+
+            pillars.splice(
+                i,
+                1
+            );
+
+        }
+
+    }
+
+
+    /* Ground and Sky Collision */
+
+    if (
+
+        birdRect.top <= 0
+
+        ||
+
+        birdRect.bottom >=
+        window.innerHeight
+
+    ) {
+
+        endGame();
+
+        return;
+
+    }
+
+
+    requestAnimationFrame(
+        gameLoop
+    );
+
+}
+
+
+/* Collision Function */
+
+function collision(a, b) {
+
+    return !(
+        a.right < b.left
+
+        ||
+
+        a.left > b.right
+
+        ||
+
+        a.bottom < b.top
+
+        ||
+
+        a.top > b.bottom
+    );
+
+}
+
+
+/* Game Over */
+
+function endGame() {
+
+    gameRunning = false;
+
+
+    document
+        .getElementById("finalScore")
+        .innerText =
+        "Score: " + score;
+
+
+    document
+        .getElementById("gameOver")
+        .style.display =
+        "flex";
+
+}
+
+
+/* Restart */
+
+function restartGame() {
+
+    document
+        .getElementById("gameOver")
+        .style.display =
+        "none";
+
+
+    startGame();
+
+}
+
+</script>
+
+</body>
+</html>
