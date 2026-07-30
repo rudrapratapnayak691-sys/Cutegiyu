@@ -329,9 +329,15 @@ let birdY;
 
 let velocity;
 
-let gravity = 0.45;
 
-let jump = -7;
+/* Slower Falling */
+
+let gravity = 0.25;
+
+
+/* Smoother Jump */
+
+let jump = -6;
 
 
 let gameRunning = false;
@@ -485,6 +491,8 @@ function createPillar(delay) {
             const screenHeight =
                 window.innerHeight;
 
+
+            /* Gap between pillars */
 
             const gap = 190;
 
@@ -740,7 +748,7 @@ function gameLoop() {
     }
 
 
-    /* Ground and Sky Collision */
+    /* Sky and Ground Collision */
 
     if (
 
